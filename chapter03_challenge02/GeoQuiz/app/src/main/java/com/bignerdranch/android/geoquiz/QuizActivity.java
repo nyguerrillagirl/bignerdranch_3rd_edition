@@ -16,6 +16,7 @@ public class QuizActivity extends AppCompatActivity {
     private static final String TAG = "QuizActivity";
 
     private static final String KEY_INDEX = "index";
+    private static final String KEY_NUM_CORRECT = "num_correct";
 
     private Button mTrueButton;
     private Button mFalseButton;
@@ -34,6 +35,7 @@ public class QuizActivity extends AppCompatActivity {
     };
 
     private int mCurrentIndex;
+    private int mNumberOfCorrectAnswers = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class QuizActivity extends AppCompatActivity {
         // Check to see if the Bundle has the index to the current question
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX,0);
+            mNumberOfCorrectAnswers = savedInstanceState.getInt(KEY_NUM_CORRECT, 0);
         }
         mTrueButton = (Button) findViewById(R.id.true_button);
         mFalseButton = (Button) findViewById(R.id.false_button);
@@ -94,16 +97,36 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void updateQuestion() {
-         int question = mQuestionBank[mCurrentIndex].getTextResId();
+        int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
+        // determine if the True or False buttons should be disabled
+        if (mQuestionBank[mCurrentIndex].isAnswered())  {
+            // disable the button
+            Log.d(TAG, "Both buttons will be disabled...");
+            setButtons(false);
+        } else {
+            // enable the buttons
+            Log.d(TAG, "Both button will be enabled...");
+            setButtons(true);
+        }
+
+    }
+
+    private void setButtons(boolean buttonEnableValue) {
+        mTrueButton.setEnabled(buttonEnableValue);
+        mFalseButton.setEnabled(buttonEnableValue);
     }
 
     private void checkAnswer(boolean userPressedTrue) {
+        // set question as answered
+        setButtons(false);
+        mQuestionBank[mCurrentIndex].setAnswered(true);
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
 
         int messageResId;
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
+            ++mNumberOfCorrectAnswers;
         } else {
             messageResId = R.string.incorrect_toast;
         }
@@ -111,6 +134,24 @@ public class QuizActivity extends AppCompatActivity {
         Toast.makeText(QuizActivity.this, messageResId,
                 Toast.LENGTH_SHORT).show();
 
+        checkIfAllQuestionAnswered();
+    }
+
+    private String getFinalMessage() {
+        return String.format("You got %d %% correct.", (int)((double)mNumberOfCorrectAnswers / (double) mQuestionBank.length * 100.0));
+
+    }
+    private void checkIfAllQuestionAnswered() {
+        int count = 0;
+        for (int i=0; i < mQuestionBank.length; i++) {
+            if (mQuestionBank[i].isAnswered()) {
+                ++count;
+            }
+        }
+        if (count == mQuestionBank.length) {
+            // All questions answered
+            Toast.makeText(QuizActivity.this, getFinalMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -119,6 +160,7 @@ public class QuizActivity extends AppCompatActivity {
         Log.i(TAG, "onSaveInstanceState");
         // Save an index to the current question
         outState.putInt(KEY_INDEX, mCurrentIndex);
+        outState.putInt(KEY_NUM_CORRECT, mNumberOfCorrectAnswers);
     }
 
     @Override

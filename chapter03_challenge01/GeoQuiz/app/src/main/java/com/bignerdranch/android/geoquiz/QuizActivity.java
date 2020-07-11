@@ -94,11 +94,26 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void updateQuestion() {
-         int question = mQuestionBank[mCurrentIndex].getTextResId();
+        int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
+        // determine if the True or False buttons should be disabled
+        if (mQuestionBank[mCurrentIndex].isAnswered())  {
+            // disable the button
+            Log.d(TAG, "Both buttons will be disabled...");
+            mTrueButton.setEnabled(false);
+            mFalseButton.setEnabled(false);
+        } else {
+            // enable the buttons
+            Log.d(TAG, "Both button will be enabled...");
+            mTrueButton.setEnabled(true);
+            mFalseButton.setEnabled(true);
+        }
+
     }
 
     private void checkAnswer(boolean userPressedTrue) {
+        // set question as answered
+        mQuestionBank[mCurrentIndex].setAnswered(true);
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
 
         int messageResId;

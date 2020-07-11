@@ -16,10 +16,11 @@ chapter02_challenge02 - Adding previous button
 
 chapter02_challenge03 - From Button to ImageButton
 
-chapter03 - watching the activity
+chapter03 - watching the activity states. Handling device rotation.
 
+chapter03_challege01 - Once a user provides an answer - disable the buttons for that question
 
-
+chapter03_challege02 - Keep a tally on the number of correct answers, display a Toast after the user answers ALL the questions
 
 
 
