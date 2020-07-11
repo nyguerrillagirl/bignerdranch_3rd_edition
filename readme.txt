@@ -16,6 +16,8 @@ chapter02_challenge02 - Adding previous button
 
 chapter02_challenge03 - From Button to ImageButton
 
+chapter03 - watching the activity
+
 
 
 
